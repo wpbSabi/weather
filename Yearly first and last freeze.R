@@ -43,9 +43,9 @@ freeze <- ggplot() +
   geom_point(data=freeze_days, aes(y=year, x=as.Date(yday,origin='2020-01-01'))
              , color = "gray", size = 0.8)+
   geom_point(data=first_freeze_yday, aes(y=year, x=as.Date(yday,origin='2020-01-01'))
-              , size = 3, color = "purple") +
+             ,fill = "purple",shape = 21, size = 3, color = 'black') +
   geom_point(data=last_freeze_yday, aes(y=year, x=as.Date(yday,origin='2020-01-01')) 
-              , size = 3, color = "blue") +
+             ,fill = "blue",shape = 21, size = 3, color = 'black') +
   scale_y_reverse(breaks= seq(1950, 2020, 10), minor_breaks = seq(1944, 2020, 2)) +
   scale_x_date(date_labels = "%b", breaks = "month") +
   theme_minimal() +
