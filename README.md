@@ -15,10 +15,6 @@ Using this data, weather visualizations are done for a zipcode to answer the fol
 
 These visualizations are helpful for gardeners and/or farmers that pay attention to precipitation and freezing temperatures.  The visualizations may also be helpful for real estate / finding new areas with which one is not as familiar.
 
-## Want to know more or see a quick summary?
-
-See 'Overview Weather Repository.pdf' for summaries about some of the visualizations.
-
 # How do I run the code?
 
 If you have cloned the repository:
