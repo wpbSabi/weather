@@ -1,0 +1,327 @@
+---
+title: "Precipitation"
+author: "Sabi Horvat (Contact www.github.com/wpbsabi or www.twitter.com/tourofdata)"
+date: "January 2021"
+output: pdf_document
+---
+
+## Welcome to the Precipitation data overview 
+Have you wondered how you could get your hands on weather data to look into more detail than you could find on a wikipedia page?  The US weather data source from the National Centers for Environmental Information can be used to lookup postal code data for weather analysis (  https://www.climate.gov/maps-data/dataset/past-weather-zip-code-data-table).
+
+In this analysis you'll find data wrangling, bar charts, line charts, box plots, and more analyses to truly understand the precipitation of a specific zipcode. The zipcode used in the plots below contains the Portland, Oregon airport PDX.
+
+```{r setup libraries and prepare data, include=FALSE, echo=FALSE}
+library(cowplot)   # arranging multiple plots in one space
+library(ggtext)    # element_textbox_simple
+library(ggthemes)  # border around plots
+library(formattable) # percent format, maybe use for tables later
+library(kableExtra) # printing tables to PDF
+library(lubridate) # year, month, yday
+library(tidyverse) # read_csv and pipes
+
+# GET DATA from https://www.climate.gov/maps-data/dataset/past-weather-zip-code-data-table
+# for zipcode 97218 (includes PDX airport), 1941 - 2020 data available
+csv_data <- read_csv('precipitation_data.csv') 
+ # PRCP = precipitation
+ # SNOW = snowfall
+ # SNWD = snow depth
+
+# Rain Data
+
+# extract year, month, day from the date
+rain_weekly_2020 <- csv_data %>%
+  mutate(YEAR = year(DATE),WEEK=ifelse(week(DATE)==53,52,week(DATE))) %>% # in some years, such as 2019, the 53rd week causes issues, in order to plot the graph with "months" on the axis, I append 53 to 52
+  filter(YEAR == '2020' & PRCP > 0) %>%
+  select(YEAR,WEEK,PRCP)%>%
+  group_by(YEAR,WEEK) %>%
+  summarise(RAINFALL = sum(PRCP)) %>%
+  mutate(RAIN_DATE = as.Date(paste(YEAR,WEEK,1),"%Y%U %u"))
+
+rain_monthly_2020 <- csv_data %>%
+  mutate(MONTH = floor_date(DATE, unit = 'month')) %>%
+  filter(PRCP > 0 & year(DATE) == '2020') %>%
+  select(MONTH,PRCP,SNOW,SNWD) %>%
+  group_by(MONTH) %>%
+  summarise(RAINFALL = sum(PRCP)) 
+
+rain_monthly <- csv_data %>%
+  filter(is.na(PRCP) == FALSE) %>%
+  mutate(YEAR = year(DATE), MONTH = month(DATE)
+         ,MONTH_ABB = month.abb[MONTH]) %>%
+  select(YEAR,MONTH,MONTH_ABB,RAINFALL=PRCP) %>%
+  group_by(YEAR,MONTH,MONTH_ABB) %>%
+  summarise(sum(RAINFALL))
+
+rain_yearly <- csv_data %>%
+  filter(is.na(PRCP) == FALSE) %>%
+  mutate(YEAR = year(DATE)) %>%
+  select(YEAR,RAINFALL=PRCP) %>%
+  group_by(YEAR) %>%
+  summarise(sum(RAINFALL))
+  
+rain_daily_2020 <- csv_data %>%
+  mutate(MONTH = floor_date(DATE, unit = 'month')) %>%
+  filter(year(DATE) == '2020') %>%
+  select(DATE,MONTH,RAINFALL=PRCP) 
+
+# Snow Data
+snowfall <- csv_data %>%
+  filter(is.na(SNOW) == FALSE) %>%
+  mutate(MONTH = floor_date(DATE, unit = 'month')
+         ,YEAR = year(DATE)) %>%
+  select(DATE,MONTH,YEAR,SNOW)
+
+snow_inches_per_year <- snowfall %>%
+  select(YEAR,SNOW) %>%
+  group_by(YEAR) %>%
+  tally(sum(SNOW))
+
+snow_days_per_year <- snowfall %>%
+  select(YEAR,SNOW) %>%
+  group_by(YEAR) %>%
+  tally(SNOW > 0)
+
+# snowdepth <- csv_data %>%
+#   mutate(MONTH = floor_date(DATE, unit = 'month')
+#          ,YEAR = year(DATE)) %>%
+#   select(DATE,MONTH,YEAR,SNWD)
+
+# snowdepth_days_per_year <- snowdepth %>%
+#   select(YEAR,SNWD) %>%
+#   group_by(YEAR) %>%
+#   tally(SNWD > 0)
+```
+
+```{r rain by week, include=TRUE, echo=FALSE, fig.width=5.7, class='black outline'}
+ggplot() +
+  geom_col(data=rain_weekly_2020,mapping = aes(x=RAIN_DATE, y=RAINFALL))+
+  scale_x_date(date_labels = "%b", breaks = "month") +
+  theme_economist_white() + #theme_minimal() +
+  theme( plot.title.position = "panel"
+          ,plot.title = element_textbox_simple(
+            size = 13,
+            lineheight = 1,
+            padding = margin(5.5, 5.5, 5.5, 5.5),
+            margin = margin(0, 0, 5.5, 0))
+         ,panel.grid.major = element_blank()
+         ,panel.grid.minor = element_blank()
+         #,plot.margin = margin(5,5,5,5)
+         ) +
+   ggtitle("<b>2020 Weekly Rainfall for the PDX Zipcode (97218)</b>   <br><span style = 'font-size:14pt'>") +
+  labs(caption = "Data: National Centers for Environmental Information") +
+  xlab('') +
+  ylab('Weekly Rainfall (inches)\n')
+```
+\newpage
+Daily and weekly rainfall is interesting to inspect, but the monthly accumulation data is cleaner to view.
+
+```{r rain by month, include=TRUE, echo=FALSE, fig.width=5.7, fig.height=4}
+ggplot() +
+  geom_col(data=rain_monthly_2020, mapping = aes(x=MONTH, y=RAINFALL)
+           ,color='black') +
+  scale_x_date(date_labels = "%b", breaks = "month") +
+  theme_economist_white() + #theme_minimal() +
+  theme( plot.title.position = "panel"
+         ,plot.title = element_textbox_simple(
+           size = 13,
+           lineheight = 1,
+           padding = margin(5.5, 5.5, 5.5, 5.5),
+           margin = margin(0, 0, 5.5, 0))
+         ,panel.grid.major = element_blank()
+         ,panel.grid.minor = element_blank()
+         #,plot.margin = margin(5,5,5,10)
+         ,legend.title = element_blank()
+         ) +
+   ggtitle("<b>2020 Monthly Rainfall for PDX Airport</b>   <br><span style = 'font-size:14pt'>") +
+  labs(caption = "Data: National Centers for Environmental Information") +
+  xlab('') +
+  ylab('Monthly Rainfall (inches)\n')
+```
+
+The 80 year average was similar to the 60, 40, or 20 year average.  The 80 year average box plot is displayed since the additional data showcases additional outliers.
+
+```{r historical average rain per month, include=TRUE, echo=FALSE, fig.width=5.7, fig.height=3.5}
+ggplot() +
+  geom_boxplot(data=rain_monthly
+               , mapping = aes(x=reorder(MONTH_ABB,MONTH), y=`sum(RAINFALL)`, group=MONTH_ABB)
+               , color='black') +
+  #scale_x_date(date_labels = "%b", breaks = "month") +
+  theme_economist_white() + #theme_minimal() +
+  theme( plot.title.position = "panel"
+         ,plot.title = element_textbox_simple(
+           size = 13,
+           lineheight = 1,
+           padding = margin(5.5, 5.5, 5.5, 5.5),
+           margin = margin(0, 0, 5.5, 0))
+         ,panel.grid.major = element_blank()
+         ,panel.grid.minor = element_blank()
+         #,plot.margin = margin(5,5,5,10)
+         ,legend.title = element_blank()
+         ) +
+  ggtitle("<b>Rainfall by Month at PDX Airport (since 1941) </b>   <br><span style = 'font-size:14pt'>"
+  ) +
+  labs(caption = "Data: National Centers for Environmental Information") +
+  xlab('') +
+  ylab('Rainfall (inches)\n') 
+```
+
+\newpage
+The following chart of the last six years of precipitation rekindles memories. I moved to Oregon in 2015 to witness record rainfall in December my first year, once again in October the next year, and then the third year started off with a very rainy February.  Farmers and gardeners struggled with the saturated soils which weren't ready for planting until later than usual.
+
+```{r rainfall last five years, include=TRUE, echo=FALSE, fig.width=5.7, fig.height=3.5}
+ggplot() +
+  geom_line(rain_monthly %>% filter(YEAR >= 2015) %>% mutate(YEAR = as.character(YEAR))
+            , mapping = aes(x=reorder(MONTH_ABB,MONTH),y=`sum(RAINFALL)`
+                            , group = YEAR, color = YEAR), size = 1.5) +
+  theme_economist_white() + 
+  theme( plot.title.position = "panel"
+         ,plot.title = element_textbox_simple(
+           size = 13,
+           lineheight = 1,
+           padding = margin(5.5, 5.5, 5.5, 5.5),
+           margin = margin(0, 0, 5.5, 0))
+         ,panel.grid.major = element_blank()
+         ,panel.grid.minor = element_blank()
+         #,plot.margin = margin(5,5,5,10)
+         #,legend.title = element_blank()
+         ) +
+  ggtitle("<b>Rainfall by Month at PDX Airport (since 2015) </b>   <br><span style = 'font-size:14pt'>"
+  ) +
+  labs(caption = "Data: National Centers for Environmental Information") +
+  xlab('') +
+  ylab('Rainfall (inches)\n') 
+```
+
+The yearly rainfall is decreasing slightly, but the number of data points are not enough for me to claim that this decrease is indicative of a long term trend.
+
+```{r yearly rainfall, include=TRUE, echo=FALSE, fig.width=5.7, fig.height=3.8}
+ggplot(rain_yearly 
+            , mapping = aes(x=YEAR,y=`sum(RAINFALL)`)) +
+  geom_line(size = 1.5) +
+  geom_smooth(method = "lm") +
+  theme_economist_white() + 
+  theme( plot.title.position = "panel"
+         ,plot.title = element_textbox_simple(
+           size = 13,
+           lineheight = 1,
+           padding = margin(5.5, 5.5, 5.5, 5.5),
+           margin = margin(0, 0, 5.5, 0))
+         ,panel.grid.major = element_blank()
+         ,panel.grid.minor = element_blank()
+         #,plot.margin = margin(5,5,5,10)
+         #,legend.title = element_blank()
+         ) +
+  ggtitle("<b>Rainfall by Year by PDX Airport</b>   <br><span style = 'font-size:14pt'>"
+  ) +
+  labs(caption = "Data: National Centers for Environmental Information") +
+  xlab('') +
+  ylab('Rainfall (inches)\n')
+```
+
+Snowfall is a less common story in the PDX area, especially in the last 20 years. 
+
+While snow depth data exists in addition to snowfall data, the snow depth data was very similar to the snowfall data for this zipcode.  Snow depth may be a more interesting topic in other climates.
+
+```{r snow inches per year, include=TRUE, echo=FALSE, , fig.height=3.8}
+plot_snow_inches <- ggplot() +
+  geom_point(data=snow_inches_per_year, mapping = aes(x=YEAR, y=n),color='black') +
+  theme_economist_white() + 
+  theme( plot.title.position = "panel"
+         ,plot.title = element_textbox_simple(
+           size = 13,
+           lineheight = 1,
+           padding = margin(5.5, 5.5, 5.5, 5.5),
+           margin = margin(0, 0, 5.5, 0))
+         #,panel.grid.major = element_blank()
+         ,panel.grid.minor = element_blank()
+         #,plot.margin = margin(5,5,5,10)
+         ,legend.title = element_blank()
+         ) +
+  ggtitle("<b>Yearly Inches of Snowfall for PDX Airport</b>   <br><span style = 'font-size:14pt'>") +
+  labs(caption = "Data: National Centers for Environmental Information") +
+  xlab('') +
+  ylab('')
+
+plot_snow_days <- ggplot() +
+  geom_point(data=snow_days_per_year, mapping = aes(x=YEAR, y=n),color='black') +
+  theme_economist_white() + #theme_minimal() +
+  theme( plot.title.position = "panel"
+         ,plot.title = element_textbox_simple(
+           size = 13,
+           lineheight = 1,
+           padding = margin(5.5, 5.5, 5.5, 5.5),
+           margin = margin(0, 0, 5.5, 0))
+         #,panel.grid.major = element_blank()
+         ,panel.grid.minor = element_blank()
+         #,plot.margin = margin(5,5,5,10)
+         ,legend.title = element_blank()
+         ) +
+  ggtitle("<b>Yearly Days with Snowfall for PDX Airport</b>   <br><span style = 'font-size:14pt'>") +
+  labs(caption = "Data: National Centers for Environmental Information") +
+  xlab('') +
+  ylab('')
+
+plot_grid(plot_snow_inches, plot_snow_days)
+
+```
+
+Inches of snowfall tells a greater story than days with snowfall
+
+```{r snow days per year, include=TRUE, echo=FALSE, fig.width=5.7, fig.height=3.8}
+ggplot() +
+  geom_line(data=snow_days_per_year, mapping = aes(x=YEAR, y=n)
+           ,color='black') +
+  geom_point(data=snow_days_per_year, mapping = aes(x=YEAR, y=n)
+            ,color='black') +
+  #scale_x_date(date_labels = "%b", breaks = "month") +
+  theme_economist_white() + #theme_minimal() +
+  theme( plot.title.position = "panel"
+         ,plot.title = element_textbox_simple(
+           size = 13,
+           lineheight = 1,
+           padding = margin(5.5, 5.5, 5.5, 5.5),
+           margin = margin(0, 0, 5.5, 0))
+         #,panel.grid.major = element_blank()
+         ,panel.grid.minor = element_blank()
+         #,plot.margin = margin(5,5,5,10)
+         ,legend.title = element_blank()
+         ) +
+  ggtitle("<b>Yearly Days with Snowfall for PDX Airport</b>   <br><span style = 'font-size:14pt'>") +
+  labs(caption = "Data: National Centers for Environmental Information") +
+  xlab('') +
+  ylab('Snowfall (inches)\n')
+```
+
+\newpage
+The record snowfall in one day was 14.4 inches on January 21st, 1943.  That was the only recording of more snow than 10 inches of snowfall in one day.  The record year of snowfall in 1950 was due to a very white January and February.
+
+Which months have seen snowfall since recording began?
+
+```{r Which months are most likely for snow?, include=TRUE, echo=FALSE, fig.width=5}
+# month/years it has snowed in the years of data
+snow_months <- unique(snowfall %>%
+  filter(SNOW > 0) %>%
+  select(MONTH)) %>% 
+  mutate(counter=1, month=month(MONTH,label=TRUE,abbr=FALSE)) %>%
+  group_by(month) %>%
+  tally(counter) %>%
+  mutate('Percent of years that it snowed' = percent(n/length(unique(snowfall$YEAR)),1)) %>%
+  select(Month = month,'Number of years with snow' = n,'Percent of years that it snowed')
+kable(snow_months) %>% kable_styling() %>% row_spec(0,bold=TRUE) 
+# # month/years it has snowed since 2000
+# snowfall_since_2000 <- snowfall %>% filter(YEAR >= 2000)
+# snow_months_since2000 <- unique(snowfall %>%
+#                         filter(SNOW > 0, YEAR >= 2000) %>%
+#                         select(MONTH)) %>% 
+#   mutate(counter=1, month=month(MONTH,label=TRUE,abbr=FALSE)) %>%
+#   group_by(month) %>%
+#   tally(counter) %>%
+#   mutate(percent = percent(n/length(unique(snowfall_since_2000$YEAR)),2))
+# snow_months_since2000
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
