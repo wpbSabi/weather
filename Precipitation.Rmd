@@ -1,6 +1,6 @@
 ---
 title: "Precipitation"
-author: "Sabi Horvat (Contact www.github.com/wpbsabi or www.twitter.com/tourofdata)"
+author: "Sabi Horvat (www.github.com/wpbsabi / www.twitter.com/tourofdata)"
 date: "January 2021"
 output: pdf_document
 ---
@@ -9,6 +9,8 @@ output: pdf_document
 Have you wondered how you could get your hands on weather data to look into more detail than you could find on a wikipedia page?  The US weather data source from the National Centers for Environmental Information can be used to lookup postal code data for weather analysis (  https://www.climate.gov/maps-data/dataset/past-weather-zip-code-data-table).
 
 In this analysis you'll find data wrangling, bar charts, line charts, box plots, and more analyses to truly understand the precipitation of a specific zipcode. The zipcode used in the plots below contains the Portland, Oregon airport PDX.
+
+Finally, there is a comparison between these weather patterns for two zipcodes.
 
 ```{r setup libraries and prepare data, include=FALSE, echo=FALSE}
 library(cowplot)   # arranging multiple plots in one space
@@ -307,7 +309,9 @@ snow_months <- unique(snowfall %>%
   tally(counter) %>%
   mutate('Percent of years that it snowed' = percent(n/length(unique(snowfall$YEAR)),1)) %>%
   select(Month = month,'Number of years with snow' = n,'Percent of years that it snowed')
-kable(snow_months) %>% kable_styling() %>% row_spec(0,bold=TRUE) 
+kable(snow_months) %>% kable_styling() %>% 
+  row_spec(0,bold=TRUE, color='black') %>% 
+  column_spec(1:3, color='black')
 # # month/years it has snowed since 2000
 # snowfall_since_2000 <- snowfall %>% filter(YEAR >= 2000)
 # snow_months_since2000 <- unique(snowfall %>%
@@ -318,6 +322,7 @@ kable(snow_months) %>% kable_styling() %>% row_spec(0,bold=TRUE)
 #   tally(counter) %>%
 #   mutate(percent = percent(n/length(unique(snowfall_since_2000$YEAR)),2))
 # snow_months_since2000
+
 ```
 
 ## R Markdown
