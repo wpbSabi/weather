@@ -5,7 +5,7 @@ For a thorough explanation and tutorial of this project, please read my article 
 
 This repository contains data from the National Centers for Environmental Information (https://www.climate.gov/maps-data/dataset/past-weather-zip-code-data-table).
 
-Using this data, weather visualizations are done for a zipcode to answer the following questions:
+Using this data, weather visualizations for a zipcode answer the following questions:
 * How often has it rained?  Which months receive more (or less) rain?
 * How often has it snowed?
 * When is the average first freeze in the fall?
@@ -14,7 +14,7 @@ Using this data, weather visualizations are done for a zipcode to answer the fol
 
 ## Why/History
 
-These visualizations are helpful for gardeners and/or farmers that pay attention to precipitation and freezing temperatures.  The visualizations may also be helpful for real estate / finding new areas with which one is not as familiar.
+These visualizations are helpful for gardeners and farmers that pay attention to precipitation and freezing temperatures.  The visualizations may also be helpful for real estate in that learning about weather patterns may be a consideration for migration.
 
 
 ## Visualizations for the Portland, Oregon Airport Zipcode (97218)
@@ -29,7 +29,7 @@ Winter weather analysis can vary greatly by region.  For Portland, it is interes
 
 Gardeners and growers will be particularly interested in the history of last freezes in the spring and first freezes in the fall.  And a greater audience may also be interested in the frequency of minimum temperatures at or below freezing.
 
-![Freeze(https://github.com/wpbSabi/weather/blob/main/images/freeze.png)
+![Freeze](https://github.com/wpbSabi/weather/blob/main/images/freeze.png)
 
 ## How do I run the code?
 
