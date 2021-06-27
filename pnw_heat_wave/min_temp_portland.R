@@ -52,7 +52,7 @@ ggplot() +
          ,panel.grid.minor = element_blank()
          ,legend.title = element_blank()) +
   coord_cartesian(xlim=c(1940, 2021), ylim=c(60, 85)) + 
-  ggtitle("<b>Summer Maximum Lowest Nighttime Temperature by Year</b><br><span style = 'font-size:14pt'>") +
+  ggtitle("<b>Maximum Lowest Nighttime Temperature by Year</b><br><span style = 'font-size:14pt'>") +
   labs(caption = "Data: National Centers for Environmental Information") +
   xlab('') +
   ylab('Fahrenheit\n')
