@@ -12,7 +12,13 @@ library(ggtext)
 #library(cowplot) # for multiple graphs (zoom in on years)
 
 # GET DATA from https://www.climate.gov/maps-data/dataset/past-weather-zip-code-data-table
+# via online search https://www.ncdc.noaa.gov/cdo-web/search
 csv_data <- read_csv('Yearly first and last freeze data.csv') # 1941 January to 2020 November
+
+# for appending new data (added 2021-full year and 2020-December data)
+# sort_data <- csv_data %>%
+#   arrange(DATE)
+# write_csv(sort_data, 'Yearly first and last freeze data.csv')
 
 # extract year, month, day from the date
 extract_dates <- csv_data %>%
@@ -58,8 +64,7 @@ freeze <- ggplot() +
   ggtitle("<b>Yearly First and Last Freeze Dates for US Zipcode 97218 </b>   <br><span style = 'font-size:14pt'>
            <br><span style = 'color:blue;'>Blue dots indicate the last freeze of winter/spring</span> 
            <br><span style = 'color:purple;'> Purple dots indicate the first freeze of fall/winter.</span> 
-           <br><span style = 'color:gray;'> Gray dots indicate days with a min temp at or below 32 degrees Fahrenheit.</span>"
-         ) +
+           <br><span style = 'color:gray;'> Gray dots indicate days with a min temp at or below 32 degrees Fahrenheit.</span>") +
   labs(caption = "Data: National Centers for Environmental Information") +
   xlab('') +
   ylab('')
