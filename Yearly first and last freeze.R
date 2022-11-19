@@ -13,7 +13,7 @@ library(ggtext)
 
 # GET DATA from https://www.climate.gov/maps-data/dataset/past-weather-zip-code-data-table
 # via online search https://www.ncdc.noaa.gov/cdo-web/search
-csv_data <- read_csv('Yearly first and last freeze data.csv') # 1941 January to 2020 November
+csv_data <- read_csv('data/97218_portland_1940_2022-11_temp_prec.csv') # 1941 January to 2022 November
 
 # for appending new data (added 2021-full year and 2020-December data)
 # sort_data <- csv_data %>%
