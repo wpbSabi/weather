@@ -14,7 +14,7 @@ library(ggtext)
 # GET DATA from https://www.climate.gov/maps-data/dataset/past-weather-zip-code-data-table
 # via online search https://www.ncdc.noaa.gov/cdo-web/search
 # csv_data <- read_csv('data/97218_portland_1940_2022-11_temp_prec.csv') # 1941 January to 2022 November
-csv_data <- read_csv('data/portland_1871_11_2022-11_temp_prec.csv') # 1871 January to 2022 November
+csv_data <- read_csv('data/portland_1871_11_2022-12_temp_prec.csv') # 1871 January to 2022 November
 
 # for appending new data (added 2021-full year and 2020-December data)
 # sort_data <- csv_data %>%
@@ -62,10 +62,11 @@ freeze <- ggplot() +
             lineheight = 1,
             padding = margin(5.5, 5.5, 5.5, 5.5),
             margin = margin(0, 0, 5.5, 0))) +
-  ggtitle("<b>Annual First and Last Freeze for Portland, OR </b>   <br><span style = 'font-size:14pt'>
-           <br><span style = 'color:blue;'>Blue dots indicate the last freeze of winter/spring</span> 
-           <br><span style = 'color:purple;'> Purple dots indicate the first freeze of fall/winter.</span> 
-           <br><span style = 'color:gray;'> Gray dots indicate days with a min temp at or below 32 degrees Fahrenheit.</span>") +
+  ggtitle("<b>Annual First and Last Freeze for Portland, OR </b>
+           <br><span style = 'color:black;font-size:10pt'>Weather Stations: Regional Forecast Center from 1871, PDX Airport from 1940</span> 
+           <br><span style = 'color:blue;font-size:10pt'>Blue dots indicate the last freeze of winter/spring</span> 
+           <br><span style = 'color:purple;font-size:10pt'> Purple dots indicate the first freeze of fall/winter.</span> 
+           <br><span style = 'color:gray;font-size:10pt'> Gray dots indicate days with a min temp at or below 32 degrees Fahrenheit.</span>") +
   labs(caption = "Data: National Centers for Environmental Information") +
   xlab('') +
   ylab('')
@@ -73,5 +74,4 @@ freeze <- ggplot() +
 
 freeze
 
-# ggsave("Yearly first and last freeze for US zipcode 97218.png", height= 6.5, width = 8, dpi = 300)
 ggsave("images/Yearly first and last freeze for Portland, OR.png", height= 6.5, width = 8, dpi = 300)
