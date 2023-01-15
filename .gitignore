@@ -1,0 +1,11 @@
+# .gitignore
+
+# Mac 
+.DS_Store
+
+# Python
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# R
+.Rhistory
