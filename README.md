@@ -51,9 +51,8 @@ Once you've cloned the repository:
   [article](https://towardsdatascience.com/democratizing-historical-weather-data-with-r-cc3c76dde7c5),
   find that R script at `./towardsDS/weather_full_script.R`.
 
->**TIPS**:
-> - You might need to change the RStudio working directory to where you cloned this repo.
-    > For this, open a new script window in RStudio and execute the `setwd()` command,
-    > for example, `setwd("/Users/<username>/repos/weather")`.
-> - Refer to the [article](https://towardsdatascience.com/democratizing-historical-weather-data-with-r-cc3c76dde7c5)
-    > for additional tips on how to run the code.
+**TIPS**:
+* You might need to change the RStudio working directory to where you cloned this repo.
+  * For this, open a new script window in RStudio and execute the `setwd()` command. For example, `setwd("/Users/<username>/repos/weather")`.
+* Refer to the [article](https://towardsdatascience.com/democratizing-historical-weather-data-with-r-cc3c76dde7c5)
+  for additional tips on how to run the code.
