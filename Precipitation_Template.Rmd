@@ -36,10 +36,12 @@ csv_data <- read_csv('data/97016_1909_2024_prec.csv')
 #   summarise('min_date' = min(DATE)
 #         	, 'max_date' = max(DATE)) 
 
-# Apply any filters, if necessary, after analyzing the data
+# Apply any filters for weather stations, if necessary, after analyzing the data
+# Optional: remove the first and last years from the data, if these are partial years
 csv_data <- csv_data %>%
-  filter(STATION == 'USC00351643')
-
+  filter(STATION == 'USC00351643',
+         DATE > '1935-12-31',
+         DATE < '2024-01-01')
 ```
 
 ```{r Prepare data, include=FALSE, echo=FALSE}
