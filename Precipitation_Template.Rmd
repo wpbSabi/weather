@@ -59,7 +59,7 @@ rain_weekly_2020 <- csv_data %>%
 
 rain_monthly_2020 <- csv_data %>%
   mutate(MONTH = floor_date(DATE, unit = 'month')) %>%
-  filter(PRCP > 0 & year(DATE) == '2020') %>%
+  filter(PRCP > 0 & year(DATE) == LATEST_YEAR) %>%
   # select(MONTH,PRCP,SNOW,SNWD) %>%
   select(MONTH,PRCP,SNOW) %>%
   group_by(MONTH) %>%
