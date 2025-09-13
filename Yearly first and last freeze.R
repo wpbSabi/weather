@@ -45,12 +45,13 @@ first_freeze_yday <- first_freeze %>% mutate(yday = yday(min))
 last_freeze_yday <- last_freeze %>% mutate(yday = yday(max))                                          
 
 # Note that the origin date doesn't matter, need date format for the x-axis scale to work
-title_to_paste1 <- "<b>Annual First and Last Freeze for Portland, OR </b>
+title_to_paste1 <- "<b>Annual First and Last Freeze at"
+title_to_paste2 <- "°F for Portland, OR </b>
   <br><span style = 'color:black;font-size:10pt'>Weather Stations: Regional Forecast Center from 1871, PDX Airport from 1940</span> 
   <br><span style = 'color:blue;font-size:10pt'>Blue dots indicate the last freeze of winter/spring</span> 
   <br><span style = 'color:purple;font-size:10pt'> Purple dots indicate the first freeze of fall/winter.</span> 
   <br><span style = 'color:gray;font-size:10pt'> Gray dots indicate days with a min temp at or below "
-title_to_paste2 <- " degrees Fahrenheit.</span>"
+title_to_paste3 <- " degrees Fahrenheit.</span>"
 
 freeze <- ggplot() +
   geom_point(data=freeze_days, aes(y=year, x=as.Date(yday,origin='2020-01-01'))
@@ -68,7 +69,7 @@ freeze <- ggplot() +
             lineheight = 1,
             padding = margin(5.5, 5.5, 5.5, 5.5),
             margin = margin(0, 0, 5.5, 0))) +
-  ggtitle(paste(title_to_paste1, FREEZE, title_to_paste2)) + 
+  ggtitle(paste(title_to_paste1, FREEZE, title_to_paste2, FREEZE, title_to_paste3)) + 
   xlab('') +
   ylab('')
   
@@ -77,4 +78,9 @@ freeze
 
 filename1 <- "images/Yearly first and last freeze (" 
 filename2 <- ") for Portland, OR.png"
-ggsave(paste0(filename1, FREEZE, filename2), height= 6.5, width = 8, dpi = 300)
+ggsave(paste0(filename1, FREEZE, filename2),
+       bg = 'white',
+       height= 6.5,
+       width = 8,
+       dpi = 300)
+
